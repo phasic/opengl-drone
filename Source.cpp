@@ -191,23 +191,23 @@ void DrawBeam(void)
 void DrawCylinders(void)
 {
 
-	// glPushMatrix();
-	// materialDrone(FRAME);
-	// glRotatef(90, 1, 0, 0);
+	glPushMatrix();
+	materialDrone(FRAME);
+	glRotatef(90, 1, 0, 0);
 
-	// glTranslatef(WIDTH / 2, 0, -4);
-	// gluCylinder(cyl, 1.0, 1.0, 5, 50, 1);
-	// gluDisk(cyl, 0, 1, 50, 1);
-	// glPopMatrix();
+	glTranslatef(WIDTH / 2, 0, -4);
+	gluCylinder(cyl, 1.0, 1.0, 5, 50, 1);
+	gluDisk(cyl, 0, 1, 50, 1);
+	glPopMatrix();
 
-	// glPushMatrix();
+	glPushMatrix();
 
-	// glRotatef(90, 1, 0, 0);
+	glRotatef(90, 1, 0, 0);
 
-	// glTranslatef(-WIDTH / 2, 0, -4);
-	// gluCylinder(cyl, 1.0, 1.0, 5, 50, 1);
-	// gluDisk(cyl, 0, 1, 50, 1);
-	// glPopMatrix();
+	glTranslatef(-WIDTH / 2, 0, -4);
+	gluCylinder(cyl, 1.0, 1.0, 5, 50, 1);
+	gluDisk(cyl, 0, 1, 50, 1);
+	glPopMatrix();
 }
 void DrawBezier(int hoek) /*eig NURBS*/
 {
@@ -280,27 +280,27 @@ void DrawTorus(void)
 }
 void DrawCone(void)
 {
-	// glPushMatrix();
-	// materialDrone(FRAME);
-	// glRotatef(90, 1, 0, 0);
-	// glTranslatef(0, 0, -0.5);
+	glPushMatrix();
+	materialDrone(FRAME);
+	glRotatef(90, 1, 0, 0);
+	glTranslatef(0, 0, -0.5);
 
-	// gluCylinder(cyl, 5.0, 7.5, 5, 100, 100);
-	// glPopMatrix();
+	gluCylinder(cyl, 5.0, 7.5, 5, 100, 100);
+	glPopMatrix();
 }
 void DrawNurbs(void)
 {
-	// glPushMatrix();
+	glPushMatrix();
 
-	// GLfloat knots[8] = {0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0};
+	GLfloat knots[8] = {0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0};
 
-	// //theNurb = gluNewNurbsRenderer();
-	// gluNurbsProperty(theNurb, GLU_DISPLAY_MODE, GLU_FILL);
+	theNurb = gluNewNurbsRenderer();
+	gluNurbsProperty(theNurb, GLU_DISPLAY_MODE, GLU_FILL);
 
-	// gluBeginSurface(theNurb);
-	// gluNurbsSurface(theNurb, 8, knots, 8, knots, 4 * 3, 3, &splinectrlpoints[0][0][0], 4, 4, GL_MAP2_VERTEX_3);
-	// gluEndSurface(theNurb);
-	// glPopMatrix();
+	gluBeginSurface(theNurb);
+	gluNurbsSurface(theNurb, 8, knots, 8, knots, 4 * 3, 3, &splinectrlpoints[0][0][0], 4, 4, GL_MAP2_VERTEX_3);
+	gluEndSurface(theNurb);
+	glPopMatrix();
 }
 void DrawBody(void)
 {
@@ -340,9 +340,9 @@ void teken(void)
 
 	distance = sqrt(pow(oog[0], 2) + pow(oog[1], 2) + pow(oog[2], 2));
 
-	// oog[0] = distance * -sinf(camAngleX * (M_PI / 180)) * cosf((camAngleY) * (M_PI / 180));
-	// oog[1] = distance * -sinf((camAngleY) * (M_PI / 180));
-	// oog[2] = -distance * cosf((camAngleX) * (M_PI / 180)) * cosf((camAngleY) * (M_PI / 180));
+	oog[0] = distance * -sinf(camAngleX * (M_PI / 180)) * cosf((camAngleY) * (M_PI / 180));
+	oog[1] = distance * -sinf((camAngleY) * (M_PI / 180));
+	oog[2] = -distance * cosf((camAngleX) * (M_PI / 180)) * cosf((camAngleY) * (M_PI / 180));
 
 	gluLookAt(oog[0], oog[1], oog[2], ref[0], ref[1], ref[2], up[0], up[1], up[2]);
 
@@ -611,13 +611,13 @@ int main(int argc, char *argv[])
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowPosition(50, 100);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(800, 800);
 	glutCreateWindow("Drone");
-	// glutKeyboardFunc(keyboard);
+	glutKeyboardFunc(keyboard);
 
-	// glutReshapeFunc(herschaal);
-	// myinit();
+	glutReshapeFunc(herschaal);
+	myinit();
 	glutDisplayFunc(teken);
-	// animDrone();
+	animDrone();
 	glutMainLoop();
 }
