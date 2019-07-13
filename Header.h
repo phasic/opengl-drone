@@ -18,7 +18,7 @@
 #define BODY 3
 
 /*Keyboard Variables*/
-int as = 1, wire = 0, show = 1, anim = 0, fly = 0, pilot = 0;
+int axis = 1, wire = 0, show = 1, anim = 0, fly = 0, pilot = 0;
 
 /*DRAW PROPERTIES*/
 #pragma region DrawProperties
@@ -26,7 +26,7 @@ int as = 1, wire = 0, show = 1, anim = 0, fly = 0, pilot = 0;
 char typ;
 
 /*Camera Variables*/
-GLfloat oog[3] = { 75.0, 75.0, 75.0 };
+GLfloat eye[3] = { 75.0, 75.0, 75.0 };
 GLfloat ref[3] = { 0.0, 0.0, 0.0 };
 GLfloat up[3] = { 0.0, 100.0, 0.0 };
 GLdouble xmin = -100.0, xmax = 100.0, ymin = -100.0, ymax = 100.0;
@@ -62,8 +62,8 @@ GLUnurbsObj* theNurb = gluNewNurbsRenderer();
 #pragma endregion
 /*ANIMATION PROPERTIES*/
 #pragma region AnimationProperties
-GLfloat animHoek, animFlyHoek, animFlyTilt;
-GLint tijd = 6, tijd2 = 10;
+GLfloat animAngle, animFlyAngle, animFlyTilt;
+GLint time_ = 6, time2_ = 10;
 
 int maxHeight = 50;
 int heightAchieved = 0;
@@ -83,27 +83,10 @@ GLfloat lp3[] = { 0, 0,0,0 };
 GLfloat lp3_direction[] = { 0, -1, 0 };
 
 /*Light Colours*/
-GLfloat wit[] = { 1.0, 1.0, 1.0, 1.0 };
-GLfloat grblauw[] = { 0.0, 1.0, 1.0, 1.0 };
-GLfloat rood[] = { 1.0, 0.4, 0.4, 1.0 };
-GLfloat grijs[] = { 0.5, 0.5, 0.5, 1.0 };
-
-GLfloat zwart[] = { 0.0, 0.0, 0.0, 1.0 };
-GLfloat blauw[] = { 0.0, 0.0, 1.0, 1.0 };
-GLfloat roodblauw[] = { 1.0, 0.0, 1.0, 1.0 };
-GLfloat groen[] = { 0.0, 1.0, 0.0, 1.0 };
-
-
-
-
-GLfloat direc[] = { 1.0, 0, 0.0 };
-GLfloat shini = 60.0;
-GLfloat hoek = 50.0;
-GLfloat expo = 5.0;
-GLfloat bocht = 0.0;    /* roterende bol */
-GLfloat zwak = 1.0;    /* lineaire verzwakking */
-int	welk = 1;
-
+GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
+GLfloat grBlue[] = { 0.0, 1.0, 1.0, 1.0 };
+GLfloat red[] = { 1.0, 0.4, 0.4, 1.0 };
+GLfloat black[] = { 0.0, 0.0, 0.0, 1.0 };
 GLint flat = 1;
 
 
@@ -112,7 +95,6 @@ GLint flat = 1;
 int masterSwitch = 0;
 
 int zeroSwitch = 0, oneSwitch = 0, twoSwitch = 0;
-int droneSwitch = 0;
 
 
 

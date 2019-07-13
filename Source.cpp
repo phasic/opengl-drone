@@ -1,14 +1,5 @@
 #include "Header.h"
 
-//TODO
-/* 
-LIGHT 2 SPECULAR LIGHT? HOW DOES THIS SHIT WORK?
-LIGHT 3 = DRONE LIGHT, LET IT ROTATE
-
-
-
-
-*/
 void lightInit(void);
 void lightWorld(void);
 void lightDrone(void);
@@ -18,8 +9,8 @@ void droneMaterial(void);
 void materialDrone(int object);
 
 void lightControl(int controlAll);
-
-void myinit(void)
+void printKeybindInfo(void);
+void myInit(void)
 {
 	glBlendFunc(GL_ONE, GL_SRC_ALPHA);
 	glClearColor(0.8, 0.8, 0.8, 0.0);
@@ -36,13 +27,15 @@ void myinit(void)
 
 	/*LIGHTING*/
 	lightInit();
+
+	printKeybindInfo();
 }
 void keyboard(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
 	case '1':
-		as = !as;
+		axis = !axis;
 		break;
 	case '2':
 		wire = !wire;
@@ -70,13 +63,9 @@ void keyboard(unsigned char key, int x, int y)
 		twoSwitch = !twoSwitch;
 		lightControl(0);
 		break;
-	case '8':
-		droneSwitch = !droneSwitch;
-		lightControl(0);
-		break;
 	case 'r':
 		scale[0] = 1.0, scale[1] = 1.0, scale[2] = 1.0, /*reset*/
-				oog[0] = 75.0, oog[1] = 75.0, oog[2] = 75.0,
+				eye[0] = 75.0, eye[1] = 75.0, eye[2] = 75.0,
 		camAngleX = -135, camAngleY = -45;
 		break;
 	case 'a':
@@ -123,13 +112,14 @@ void keyboard(unsigned char key, int x, int y)
 
 	glutPostRedisplay();
 }
+
 #pragma region DisplayFunction
-void DisplayAs(void)
+void DisplayAxis(void)
 {
-	if (as)
+	if (axis)
 	{
 		glLineWidth(1.0);
-		//z-as
+		//z-axis
 		glColor3f(0.8, 0.1, 0.0);
 		glLineStipple(2, 0x7070);
 		glBegin(GL_LINES);
@@ -138,7 +128,7 @@ void DisplayAs(void)
 		glEnd();
 		glPushMatrix();
 		glRotatef(90.0, 0.0, 1.0, 0.0);
-		//x-as
+		//x-axis
 		glColor3f(0.0, 0.1, 0.8);
 		glLineStipple(2, 0x0707);
 		glBegin(GL_LINES);
@@ -148,7 +138,7 @@ void DisplayAs(void)
 		glPopMatrix();
 		glPushMatrix();
 		glRotatef(-90.0, 1.0, 0.0, 0.0);
-		//y-as
+		//y-axis
 		glColor3f(0.0, 0.8, 0.1);
 		glLineStipple(2, 0xFF00);
 		glBegin(GL_LINES);
@@ -161,7 +151,6 @@ void DisplayAs(void)
 void DrawFloor(void)
 {
 	glPushMatrix();
-
 	glTranslatef(0, -15, 0);
 	glScalef(1000, 1000, 1000);
 	glBegin(GL_QUADS);
@@ -170,9 +159,7 @@ void DrawFloor(void)
 	glVertex3f(1, 0, 1);
 	glVertex3f(1, 0, -1);
 	glVertex3f(-1, 0, -1);
-
 	glEnd();
-
 	glPopMatrix();
 }
 void DrawBeam(void)
@@ -190,42 +177,33 @@ void DrawBeam(void)
 }
 void DrawCylinders(void)
 {
-
 	glPushMatrix();
 	materialDrone(FRAME);
 	glRotatef(90, 1, 0, 0);
-
 	glTranslatef(WIDTH / 2, 0, -4);
 	gluCylinder(cyl, 1.0, 1.0, 5, 50, 1);
 	gluDisk(cyl, 0, 1, 50, 1);
 	glPopMatrix();
-
 	glPushMatrix();
-
 	glRotatef(90, 1, 0, 0);
-
 	glTranslatef(-WIDTH / 2, 0, -4);
 	gluCylinder(cyl, 1.0, 1.0, 5, 50, 1);
 	gluDisk(cyl, 0, 1, 50, 1);
 	glPopMatrix();
 }
-void DrawBezier(int hoek) /*eig NURBS*/
+void DrawBezier(int angle)
 {
-	//Voor Bezier
 	glPushMatrix();
 	materialDrone(PROPELLER);
 	glTranslatef(0, 0.2, 0);
 	glScalef(2, 2, 2);
-	glRotatef(hoek, 0, 1, 0);
-	glRotatef(animHoek, 0, 1, 0);
+	glRotatef(angle, 0, 1, 0);
+	glRotatef(animAngle, 0, 1, 0);
 	glEnable(GL_DEPTH_TEST); //update depth buffer
 	glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, &bezierctrlpoints[0][0][0]);
-
 	glEnable(GL_MAP2_VERTEX_3);
 	glEnable(GL_AUTO_NORMAL);
-
 	glMapGrid2f(20, 0.0, 1.0, 20, 0.0, 1.0);
-
 	if (wire)
 		glEvalMesh2(GL_LINE, 0, 20, 0, 20);
 	else
@@ -234,40 +212,30 @@ void DrawBezier(int hoek) /*eig NURBS*/
 }
 void DrawPropeller(void)
 {
-
 	glPushMatrix();
-
 	glTranslatef(WIDTH / 2, 3, 0);
 	for (int i = 0; i <= 240; i += 120)
 		DrawBezier(i);
-
 	glRotatef(180, 0, 1, 0);
 	glTranslatef(WIDTH, 0, 0);
 	for (int i = 0; i <= 240; i += 120)
 		DrawBezier(i);
-
 	glPopMatrix();
 }
 void DrawSkeleton(void)
 {
 	glPushMatrix();
 	DrawBeam();
-
 	DrawCylinders();
-	//materialDrone(PROPELLER);
 	DrawPropeller();
-	//glDisable(GL_COLOR_MATERIAL);
 	glRotatef(90, 0, 1, 0);
 	DrawBeam();
 	DrawCylinders();
-	//materialDrone(PROPELLER);
 	DrawPropeller();
-	//glDisable(GL_COLOR_MATERIAL);
 	glPopMatrix();
 }
 void DrawTorus(void)
 {
-
 	glLineWidth(0.5);
 	glPushMatrix();
 	materialDrone(FRAME);
@@ -320,40 +288,32 @@ void DrawBody(void)
 void DrawDrone(void)
 {
 	glPushMatrix();
-	//glColor3f(1, 1, 0);
-	//materialDrone(FRAME);
 	DrawSkeleton();
-	//materialDrone(FRAME);
 	DrawTorus();
-	//materialDrone(FRAME);
 	DrawCone();
-	//materialDrone(BODY);
 	DrawBody();
-	glDisable(GL_LIGHTING); /* om uw assen steeds rood te houden */
+	glDisable(GL_LIGHTING);
 	glPopMatrix();
 }
-void teken(void)
+void draw(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	distance = sqrt(pow(oog[0], 2) + pow(oog[1], 2) + pow(oog[2], 2));
+	distance = sqrt(pow(eye[0], 2) + pow(eye[1], 2) + pow(eye[2], 2));
 
-	oog[0] = distance * -sinf(camAngleX * (M_PI / 180)) * cosf((camAngleY) * (M_PI / 180));
-	oog[1] = distance * -sinf((camAngleY) * (M_PI / 180));
-	oog[2] = -distance * cosf((camAngleX) * (M_PI / 180)) * cosf((camAngleY) * (M_PI / 180));
+	eye[0] = distance * -sinf(camAngleX * (M_PI / 180)) * cosf((camAngleY) * (M_PI / 180));
+	eye[1] = distance * -sinf((camAngleY) * (M_PI / 180));
+	eye[2] = -distance * cosf((camAngleX) * (M_PI / 180)) * cosf((camAngleY) * (M_PI / 180));
 
-	gluLookAt(oog[0], oog[1], oog[2], ref[0], ref[1], ref[2], up[0], up[1], up[2]);
-
-	DisplayAs();
-
-	glRotatef(animFlyHoek, 0, 1, 0);
+	gluLookAt(eye[0], eye[1], eye[2], ref[0], ref[1], ref[2], up[0], up[1], up[2]);
+	DisplayAxis();
+	glRotatef(animFlyAngle, 0, 1, 0);
 	glPushMatrix();
 	glRotatef(animFlyTilt, 1, 0, 0);
 	glScalef(scale[0], scale[1], scale[2]);
 	glTranslatef(75, height, 0);
-
 	if (show)
 	{
 		lightWorld();
@@ -361,7 +321,6 @@ void teken(void)
 	}
 
 	glPopMatrix();
-
 	/*CENTER*/
 	glPushMatrix();
 	glColor3f(0.0, 1.0, 0.0);
@@ -369,29 +328,13 @@ void teken(void)
 	glTranslatef(151, 0, 0);
 	glutSolidCube(1);
 	glPopMatrix();
-
 	glFlush();
 }
-void herschaal(GLint n_w, GLint n_h)
+void rescale(GLint n_w, GLint n_h)
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	switch (typ)
-	{
-	case 'o':
-		glOrtho(xmin, xmax, ymin, ymax, near, far);
-		fprintf(stderr, "Ortho geselecteerd\n");
-		break;
-	case 'f':
-		glFrustum(xmin, xmax, ymin, ymax, near, far);
-		fprintf(stderr, "Frustum geselecteerd\n");
-		break;
-	default:
-	case 'p':
-		gluPerspective(60.0, 1.0, near, far);
-		fprintf(stderr, "Perspectief geselecteerd\n");
-		break;
-	}
+	gluPerspective(60.0, 1.0, near, far);
 	glViewport(0, 0, n_w, n_h);
 }
 #pragma endregion
@@ -402,16 +345,16 @@ void animPropeller(int delta)
 	if (anim)
 	{
 
-		animHoek -= anim * PROPELLERSPEED;
-		if (animHoek > 360.0)
-			animHoek -= 360.0;
-		if (animHoek < -360.0)
-			animHoek += 360.0;
+		animAngle -= anim * PROPELLERSPEED;
+		if (animAngle > 360.0)
+			animAngle -= 360.0;
+		if (animAngle < -360.0)
+			animAngle += 360.0;
 	}
 
 	glutSwapBuffers();
 	glutPostRedisplay();
-	glutTimerFunc(tijd, animPropeller, 0);
+	glutTimerFunc(time_, animPropeller, 0);
 }
 
 void animFlyHeight(int delta)
@@ -432,7 +375,7 @@ void animFlyHeight(int delta)
 
 	glutSwapBuffers();
 	glutPostRedisplay();
-	glutTimerFunc(tijd2, animFlyHeight, 0);
+	glutTimerFunc(time2_, animFlyHeight, 0);
 }
 
 void animChangeHeight(int delta)
@@ -454,29 +397,29 @@ void animChangeHeight(int delta)
 
 	glutSwapBuffers();
 	glutPostRedisplay();
-	glutTimerFunc(tijd, animChangeHeight, 0);
+	glutTimerFunc(time_, animChangeHeight, 0);
 }
 void animFlyRotation(int delta)
 {
 	if (fly)
 	{
 		animFlyTilt = 10;
-		animFlyHoek -= FLYROTATIONSPEED;
-		if (animFlyHoek > 360.0)
-			animFlyHoek -= 360.0;
-		if (animFlyHoek < -360.0)
-			animFlyHoek += 360.0;
+		animFlyAngle -= FLYROTATIONSPEED;
+		if (animFlyAngle > 360.0)
+			animFlyAngle -= 360.0;
+		if (animFlyAngle < -360.0)
+			animFlyAngle += 360.0;
 	}
 	glutSwapBuffers();
 	glutPostRedisplay();
-	glutTimerFunc(tijd, animFlyRotation, 0);
+	glutTimerFunc(time_, animFlyRotation, 0);
 }
 void animDrone(void)
 {
-	glutTimerFunc(tijd, animPropeller, 0);
-	glutTimerFunc(tijd2, animFlyHeight, 0);
-	glutTimerFunc(tijd2, animChangeHeight, 0);
-	glutTimerFunc(tijd2, animFlyRotation, 0);
+	glutTimerFunc(time_, animPropeller, 0);
+	glutTimerFunc(time2_, animFlyHeight, 0);
+	glutTimerFunc(time2_, animChangeHeight, 0);
+	glutTimerFunc(time2_, animFlyRotation, 0);
 }
 
 #pragma endregion
@@ -484,11 +427,11 @@ void animDrone(void)
 
 void lightInit(void)
 {
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, zwart);
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, black);
 
-	glLightfv(GL_LIGHT0, GL_AMBIENT, wit);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, grblauw);
-	glLightfv(GL_LIGHT2, GL_SPECULAR, rood);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, white);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, grBlue);
+	glLightfv(GL_LIGHT2, GL_SPECULAR, red);
 	glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 1);
 }
 
@@ -508,28 +451,22 @@ void lightControl(int controllAll)
 			glDisable(GL_LIGHT2);
 		if (twoSwitch)
 			glEnable(GL_LIGHT2);
-		if (!droneSwitch)
-			glDisable(GL_LIGHT3);
-		if (droneSwitch)
-			glEnable(GL_LIGHT3);
 	}
 	else
 	{
 		if (!masterSwitch)
 		{
-			zeroSwitch = 0, oneSwitch = 0, twoSwitch = 0, droneSwitch = 0;
+			zeroSwitch = 0, oneSwitch = 0, twoSwitch = 0;
 			glDisable(GL_LIGHT0);
 			glDisable(GL_LIGHT1);
 			glDisable(GL_LIGHT2);
-			glDisable(GL_LIGHT3);
 		}
 		if (masterSwitch)
 		{
-			zeroSwitch = 1, oneSwitch = 1, twoSwitch = 1, droneSwitch = 1;
+			zeroSwitch = 1, oneSwitch = 1, twoSwitch = 1;
 			glEnable(GL_LIGHT0);
 			glEnable(GL_LIGHT1);
 			glEnable(GL_LIGHT2);
-			glEnable(GL_LIGHT3);
 		}
 	}
 }
@@ -581,7 +518,6 @@ void materialDrone(int object)
 }
 void lightWorld(void)
 {
-
 	glShadeModel(flat ? GL_FLAT : GL_SMOOTH);
 	//lightDrone();
 	glLightfv(GL_LIGHT0, GL_POSITION, lp0);
@@ -592,22 +528,32 @@ void lightWorld(void)
 	glEnable(GL_LIGHTING);
 }
 
+void printKeybindInfo(void)
+{
+		fprintf(stderr, "-----KEYBINDINGS-----\n");
+		fprintf(stderr, "~~~Rendering~~~\n");
+		fprintf(stderr, "\t1: show/hide axis\n");
+		fprintf(stderr, "\t2: show/hide wireframe\n");
+		fprintf(stderr, "\tv: show/hide drone\n");
+		fprintf(stderr, "~~~Lighting~~~\n");
+		fprintf(stderr, "\tl: show/hide all lights\n");
+		fprintf(stderr, "\t5: show/hide ambient light\n");
+		fprintf(stderr, "\t6: show/hide diffuse light\n");
+		fprintf(stderr, "\t7: show/hide specular light\n");
+		fprintf(stderr, "\tf: flatten lighting\n");
+		fprintf(stderr, "~~~Animation~~~\n");
+		fprintf(stderr, "\t3: start/stop propellors\n");
+		fprintf(stderr, "\t4: start/stop flying\n");
+		fprintf(stderr, "\tr: reset drone\n");
+		fprintf(stderr, "~~~Camera control~~~\n");
+		fprintf(stderr, "\tw/a/s/d: rotate viewpoint\n");
+		fprintf(stderr, "\tq/e: zoom in/out\n");
+		fprintf(stderr, "\th/H: raise/lower drone\n");
+}
+
 #pragma endregion
 int main(int argc, char *argv[])
 {
-	if (argc > 1)
-	{
-		typ = argv[1][0];
-		if (typ == 'F')
-		{
-			xmin = -1.0;
-			xmax = 2.0;
-			ymin = -1.0;
-			ymax = 1.5;
-		}
-	}
-	else
-		typ = 'p'; /* default symmetrisch perspectief  */
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowPosition(50, 100);
@@ -615,9 +561,9 @@ int main(int argc, char *argv[])
 	glutCreateWindow("Drone");
 	glutKeyboardFunc(keyboard);
 
-	glutReshapeFunc(herschaal);
-	myinit();
-	glutDisplayFunc(teken);
+	glutReshapeFunc(rescale);
+	myInit();
+	glutDisplayFunc(draw);
 	animDrone();
 	glutMainLoop();
 }
