@@ -1,3 +1,14 @@
-# compile
+# What's this repo about?
+A test project to learn some openGL and c++
+Contains deprecated openGL syntax, whose errors I supress during compilation. Next step might be to update the codebase.
 
-gcc -o ex1 Source.cpp -framework GLUT -framework OpenGL -Wno-deprecated# opengl-drone
+# How to
+## compile
+``` 
+sh compile.sh
+``` 
+
+## run
+``` 
+sh run.sh
+``` 
